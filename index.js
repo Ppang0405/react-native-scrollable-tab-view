@@ -119,7 +119,10 @@ const ScrollableTabView = createReactClass({
       this.updateSceneKeys({ page: this.state.currentPage, children: this.props.children, });
     }
 
-    if (this.props.page >= 0 && this.props.page !== this.state.currentPage) {
+    if (this.props.page !== prevProps.page
+        && this.props.page >= 0
+        && this.props.page !== this.state.currentPage
+    ) {
       this.goToPage(this.props.page);
     }
   },
@@ -224,58 +227,83 @@ const ScrollableTabView = createReactClass({
   },
 
   renderScrollableContent() {
-    if (Platform.OS === 'ios') {
-      const scenes = this._composeScenes();
-      return <Animated.ScrollView
-        horizontal
-        pagingEnabled
-        automaticallyAdjustContentInsets={false}
-        contentOffset={{ x: this.props.initialPage * this.state.containerWidth, }}
-        ref={(scrollView) => { this.scrollView = scrollView; }}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: this.state.scrollXIOS, }, }, }, ],
-          { useNativeDriver: true, listener: this._onScroll, }
-        )}
-        onMomentumScrollBegin={this._onMomentumScrollBeginAndEnd}
-        onMomentumScrollEnd={this._onMomentumScrollBeginAndEnd}
-        scrollEventThrottle={16}
-        scrollsToTop={false}
-        showsHorizontalScrollIndicator={false}
-        scrollEnabled={!this.props.locked}
-        directionalLockEnabled
-        alwaysBounceVertical={false}
-        keyboardDismissMode="on-drag"
-        {...this.props.contentProps}
-      >
-          {scenes}
-      </Animated.ScrollView>;
-    } else {
-      const scenes = this._composeScenes();
-      return <AnimatedViewPagerAndroid
-        key={this._children().length}
-        style={styles.scrollableContentAndroid}
-        initialPage={this.props.initialPage}
-        onPageSelected={this._updateSelectedPage}
-        keyboardDismissMode="on-drag"
-        scrollEnabled={!this.props.locked}
-        onPageScroll={Animated.event(
-          [{
-            nativeEvent: {
-              position: this.state.positionAndroid,
-              offset: this.state.offsetAndroid,
-            },
-          }, ],
-          {
-            useNativeDriver: true,
-            listener: this._onScroll,
-          },
-        )}
-        ref={(scrollView) => { this.scrollView = scrollView; }}
-        {...this.props.contentProps}
+    // if (Platform.OS === 'ios') {
+    //   const scenes = this._composeScenes();
+    //   return <Animated.ScrollView
+    //     horizontal
+    //     pagingEnabled
+    //     automaticallyAdjustContentInsets={false}
+    //     contentOffset={{ x: this.props.initialPage * this.state.containerWidth, }}
+    //     ref={(scrollView) => { this.scrollView = scrollView; }}
+    //     onScroll={Animated.event(
+    //       [{ nativeEvent: { contentOffset: { x: this.state.scrollXIOS, }, }, }, ],
+    //       { useNativeDriver: true, listener: this._onScroll, }
+    //     )}
+    //     onMomentumScrollBegin={this._onMomentumScrollBeginAndEnd}
+    //     onMomentumScrollEnd={this._onMomentumScrollBeginAndEnd}
+    //     scrollEventThrottle={16}
+    //     scrollsToTop={false}
+    //     showsHorizontalScrollIndicator={false}
+    //     scrollEnabled={!this.props.locked}
+    //     directionalLockEnabled
+    //     alwaysBounceVertical={false}
+    //     keyboardDismissMode="on-drag"
+    //     {...this.props.contentProps}
+    //   >
+    //       {scenes}
+    //   </Animated.ScrollView>;
+    // } else {
+    //   const scenes = this._composeScenes();
+    //   return <AnimatedViewPagerAndroid
+    //     key={this._children().length}
+    //     style={styles.scrollableContentAndroid}
+    //     initialPage={this.props.initialPage}
+    //     onPageSelected={this._updateSelectedPage}
+    //     keyboardDismissMode="on-drag"
+    //     scrollEnabled={!this.props.locked}
+    //     onPageScroll={Animated.event(
+    //       [{
+    //         nativeEvent: {
+    //           position: this.state.positionAndroid,
+    //           offset: this.state.offsetAndroid,
+    //         },
+    //       }, ],
+    //       {
+    //         useNativeDriver: true,
+    //         listener: this._onScroll,
+    //       },
+    //     )}
+    //     ref={(scrollView) => { this.scrollView = scrollView; }}
+    //     {...this.props.contentProps}
+    //   >
+    //     {scenes}
+    //   </AnimatedViewPagerAndroid>;
+    // }
+
+    const scenes = this._composeScenes();
+    return <Animated.ScrollView
+      horizontal
+      pagingEnabled
+      automaticallyAdjustContentInsets={false}
+      contentOffset={{ x: this.props.initialPage * this.state.containerWidth, }}
+      ref={(scrollView) => { this.scrollView = scrollView; }}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { x: this.state.scrollXIOS, }, }, }, ],
+        { useNativeDriver: true, listener: this._onScroll, }
+      )}
+      onMomentumScrollBegin={this._onMomentumScrollBeginAndEnd}
+      onMomentumScrollEnd={this._onMomentumScrollBeginAndEnd}
+      scrollEventThrottle={16}
+      scrollsToTop={false}
+      showsHorizontalScrollIndicator={false}
+      scrollEnabled={!this.props.locked}
+      directionalLockEnabled
+      alwaysBounceVertical={false}
+      keyboardDismissMode="on-drag"
+      {...this.props.contentProps}
       >
         {scenes}
-      </AnimatedViewPagerAndroid>;
-    }
+      </Animated.ScrollView>;
   },
 
   _composeScenes() {
